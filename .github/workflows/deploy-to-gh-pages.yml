@@ -12,11 +12,13 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    
+    defaults:
+      run:
+        shell: bash
+        
     steps:
     - uses: actions/checkout@v2
-    
-    - name: 'Deploy react app to github pages'
+    - name: 'Deploy react app to github pages' 
     - run : npm i
       shell: bash
     - run : npm ci
