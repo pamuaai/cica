@@ -7,17 +7,14 @@ import { checkLoggedIn } from "./functions/auth";
 import Menu from "./components/Menu";
 
 function App() {
-  const [isLoggedIn, setLoggedIn] = useState(false);
-  useEffect(() => {
-    setLoggedIn(checkLoggedIn());
-  }, []);
-
   return (
     <div className="App">
       <Menu />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/issues" element={<Issues />} />
+        <Route path="/login" element={<div>Login</div>} />
+        <Route path="/register" element={<div>Register</div>} />
       </Routes>
     </div>
   );
