@@ -10,7 +10,7 @@ export function Home() {
     if (checkLoggedIn()) {
       navigate("/issues");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <Container>

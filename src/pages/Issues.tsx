@@ -8,6 +8,6 @@ export function Issues() {
     if (!checkLoggedIn()) {
       navigate("/");
     }
-  }, []);
+  }, [navigate]);
   return <h1>Issues</h1>;
 }
