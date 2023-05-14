@@ -27,7 +27,13 @@ jobs:
           npm run build --legacy-peer-deps
      #   npm i --legacy-peer-deps
 
+      - name: Deploy to GitHub Pages
+        uses: webfactory/ssh-agent@v0.5.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Deploy 🚀
+        
         run: |
           # Create a temporary directory to store the build
           mkdir deploy
