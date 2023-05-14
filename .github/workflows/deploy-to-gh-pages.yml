@@ -52,7 +52,7 @@ jobs:
           git commit -m "Deploy to GitHub Pages"
 
           # Set the remote repository URL for the Pages repository
-          git remote add pages_repo https://github.com/${GITHUB_ACTOR}/${GITHUB_ACTOR}.github.io.git
+          git remote add pages_repo https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_ACTOR}/${GITHUB_ACTOR}.github.io.git
 
           # Push the build to the Pages repository
           git push --force pages_repo master
