@@ -53,7 +53,8 @@ jobs:
 
           # Set the remote repository URL for the Pages repository
           # git remote add pages_repo https://${{ secrets.GITHUB_TOKEN }}@github.com/pamuaai/pamuaai.github.io.git
-          git remote add pages_repo git@github.com:{username}/{username}.github.io.git
+          git remote add pages_repo git@github.com:pamuaai/pamuaai.github.io.git
+          
           # Push the build to the Pages repository
           git push --force pages_repo master
    # - name: Deploy 🚀
