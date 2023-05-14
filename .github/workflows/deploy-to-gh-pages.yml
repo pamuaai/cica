@@ -28,10 +28,39 @@ jobs:
      #   npm i --legacy-peer-deps
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: build # The folder the action should deploy.
-          git-config-email: markbpaines@gmail.com
+        run: |
+          # Create a temporary directory to store the build
+          mkdir deploy
+
+          # Copy the build files to the temporary directory
+          cp -R build/* deploy/
+
+          # Navigate into the temporary directory
+          cd deploy
+
+          # Initialize a new Git repository
+          git init
+
+          # Configure Git
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+          # Add the build files
+          git add .
+
+          # Commit the changes
+          git commit -m "Deploy to GitHub Pages"
+
+          # Set the remote repository URL for the Pages repository
+          git remote add pages_repo https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_ACTOR}/${GITHUB_ACTOR}.github.io.git
+
+          # Push the build to the Pages repository
+          git push --force pages_repo master
+   # - name: Deploy 🚀
+   #   uses: JamesIves/github-pages-deploy-action@v4
+   #   with:
+  #    folder: build # The folder the action should deploy.
+   #     git-config-email: markbpaines@gmail.com
    # - uses: actions/checkout@v3
    # - name: 'Deploy react app to github pages' 
    # - run : npm ci --legacy-peer-deps
