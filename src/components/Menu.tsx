@@ -22,23 +22,39 @@ export default function Menu() {
         <Navbar.Brand>🐈 C.I.C.A.</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto">
-            <NavLink
-              to={isLoggedIn ? "/issues" : "/"}
-              className="text-decoration-none text-white"
-            >
-              Home
-            </NavLink>
-          </Nav>
-          {!isLoggedIn && (
-            <Nav className="gap-2">
-              <NavLink to="/login" className="btn btn-primary">
-                Login
-              </NavLink>
-              <NavLink to="/register" className="btn btn-light text-black">
-                Register
-              </NavLink>
-            </Nav>
+          {isLoggedIn ? (
+            <>
+              <Nav className="me-auto">
+                <NavLink
+                  to="/issues"
+                  className="text-decoration-none text-white"
+                >
+                  Issues
+                </NavLink>
+              </Nav>
+              <Nav className="gap-2">
+                <NavLink to="/logout" className="btn btn-danger">
+                  Logout
+                </NavLink>
+              </Nav>
+            </>
+          ) : (
+            <>
+              <Nav className="me-auto">
+                <NavLink to="/" className="text-decoration-none text-white">
+                  Home
+                </NavLink>
+              </Nav>
+
+              <Nav className="gap-2">
+                <NavLink to="/login" className="btn btn-primary">
+                  Login
+                </NavLink>
+                <NavLink to="/register" className="btn btn-light text-black">
+                  Register
+                </NavLink>
+              </Nav>
+            </>
           )}
         </Navbar.Collapse>
       </Container>
