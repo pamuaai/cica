@@ -27,9 +27,15 @@ export default function Menu() {
               <Nav className="me-auto">
                 <NavLink
                   to="/issues"
+                  className="text-decoration-none text-white me-3"
+                >
+                  Active Issues
+                </NavLink>
+                <NavLink
+                  to="/inactive"
                   className="text-decoration-none text-white"
                 >
-                  Issues
+                  Blocked & Denied issues
                 </NavLink>
               </Nav>
               <Nav className="gap-2">

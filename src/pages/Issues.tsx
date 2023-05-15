@@ -16,9 +16,8 @@ export function Issues() {
       <Row>
         <Col>
           <Card border="warning">
-            <Card.Header className="bg-warning">Status 1</Card.Header>
+            <Card.Header className="bg-warning">New</Card.Header>
             <Card.Body>
-              <Issue></Issue>
               <Issue></Issue>
               <Issue></Issue>
               <Issue></Issue>
@@ -27,7 +26,7 @@ export function Issues() {
         </Col>
         <Col>
           <Card border="info">
-            <Card.Header className="bg-info">Status 2</Card.Header>
+            <Card.Header className="bg-info">In progress</Card.Header>
             <Card.Body>
               <Issue></Issue>
             </Card.Body>
@@ -35,7 +34,7 @@ export function Issues() {
         </Col>
         <Col>
           <Card border="danger">
-            <Card.Header className="bg-danger">Status 3</Card.Header>
+            <Card.Header className="bg-danger">Review</Card.Header>
             <Card.Body>
               <Issue></Issue>
               <Issue></Issue>
@@ -44,7 +43,7 @@ export function Issues() {
         </Col>
         <Col>
           <Card border="success">
-            <Card.Header className="bg-success">Status 4</Card.Header>
+            <Card.Header className="bg-success">Done</Card.Header>
             <Card.Body>
               <Issue></Issue>
               <Issue></Issue>

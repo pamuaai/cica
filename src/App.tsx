@@ -11,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/issues" element={<Issues />} />
+        <Route path="/inactive" element={ <div>Blocked and denied</div> } />
         <Route path="/login" element={<div>Login</div>} />
         <Route path="/register" element={<div>Register</div>} />
       </Routes>
