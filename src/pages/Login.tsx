@@ -15,7 +15,7 @@ const Login = () => {
   // const [loginFn] = useLoginMutation();
 
   const [values, setValues] = useState({ password: "", email: "" });
-  const [err, setErr] = useState(undefined);
+  const [err, setErr] = useState<string | undefined>(undefined);
   const handleChange = (event: ChangeEvent<HTMLInputElement>) =>
     setValues({ ...values, [event.target.name]: event.target.value });
 
@@ -27,6 +27,9 @@ const Login = () => {
     console.log(values);
     // Gonna have to hash the password before sending
     // Result will probably contain more strict auth stuff, like some token or something similar
+    if (!values) {
+      setErr("Unexpected error");
+    }
     try {
       //   const result = await loginFn({
       //     strategy: "local",
