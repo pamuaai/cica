@@ -7,12 +7,12 @@ import {
   useState,
 } from "react";
 import { Container, Alert, Button, Form } from "react-bootstrap";
+import { login } from "../api/auth";
+import { setCredentials } from "../functions/auth";
 
 const Login = () => {
   // const dispatch = useDispatch();
   const emailRef = useRef() as RefObject<HTMLInputElement>;
-
-  // const [loginFn] = useLoginMutation();
 
   const [values, setValues] = useState({ password: "", email: "" });
   const [err, setErr] = useState<string | undefined>(undefined);
@@ -24,29 +24,24 @@ const Login = () => {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    console.log(values);
-    // Gonna have to hash the password before sending
-    // Result will probably contain more strict auth stuff, like some token or something similar
     if (!values) {
       setErr("Unexpected error");
     }
     try {
-      //   const result = await loginFn({
-      //     strategy: "local",
-      //     email: email,
-      //     password: password,
-      //   });
-      //   if (result.data) {
-      //     dispatch(setCredentials(result.data));
-      //   }
-      //   if (result.error) {
-      //     console.error(
-      //       result.error.data?.errors[0]?.message || "Unexpected error"
-      //     );
-      //     setErr(result.error.data?.errors[0]?.message || "Unexpected error");
-      //     return;
-      //   }
+      const { data, status } = await login(email, password);
+      if (status === 200) {
+        console.log("STATUS:", status);
+        if (data) {
+          setCredentials(data);
+        }
+      } else {
+        console.error("STATUS:", status);
+        setErr("Unexpected error");
+      }
     } catch (err) {
+      // console.log(err.response.data);
+      // console.log(err.response.status);
+      // console.log(err.response.headers);
       console.error(err);
     }
   }
