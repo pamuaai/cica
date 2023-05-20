@@ -30,7 +30,7 @@ export default function Issues() {
       // GET THE ISSUES
       loadIssues();
     }
-  }, [auth.accessToken, navigate]);
+  }, [auth.accessToken, navigate, axiosPrivate]);
 
   return (
     <Container className="pt-4">
