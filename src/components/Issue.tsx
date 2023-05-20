@@ -1,15 +1,10 @@
 import { Card } from "react-bootstrap";
-
-export function Issue() {
+import { IssueType } from "../pages/Issues.types";
+export function Issue({ issue }: { issue: IssueType }) {
   return (
     <Card className="mb-3">
-      <Card.Header>Issue Title</Card.Header>
-      <Card.Body>
-        Issue desc Lorem ipsum dolor sit amet consectetur adipisicing elit.
-        Inventore molestias distinctio beatae quae. Magni pariatur, molestiae
-        rem facere nihil aspernatur tempore at impedit quaerat, tenetur nesciunt
-        exercitationem esse cumque aliquam!
-      </Card.Body>
+      <Card.Header>{issue.name}</Card.Header>
+      <Card.Body>{issue.description}</Card.Body>
     </Card>
   );
 }
