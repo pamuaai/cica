@@ -1,15 +1,23 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
-import { Container, Nav, Navbar } from "react-bootstrap";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Button, Container, Nav, Navbar } from "react-bootstrap";
 import "./Menu.scss";
 import useAuth from "../hooks/useAuth";
 
 export default function Menu() {
+  const navigate = useNavigate();
   const [isLoggedIn, setLoggedIn] = useState(false);
-  const { auth } = useAuth() as { auth: any };
+  const { auth, setAuth } = useAuth() as { auth: any; setAuth: any };
   useEffect(() => {
-    setLoggedIn(!!auth.accessToken);
-  }, [auth.accessToken]);
+    console.log(auth.accessToken);
+    setLoggedIn(auth.accessToken);
+  });
+
+  function logout() {
+    setAuth({});
+    localStorage.removeItem("auth");
+    navigate("/");
+  }
 
   return (
     <Navbar
@@ -40,9 +48,9 @@ export default function Menu() {
                 </NavLink>
               </Nav>
               <Nav className="gap-2">
-                <NavLink to="/logout" className="btn btn-danger">
-                  Logout
-                </NavLink>
+                <Button variant="danger" onClick={() => logout()}>
+                  Kilépés
+                </Button>
               </Nav>
             </>
           ) : (

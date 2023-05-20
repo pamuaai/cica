@@ -50,6 +50,11 @@ export default function Login() {
       if (status === 200) {
         setErr(undefined);
         if (data) {
+          localStorage.removeItem("auth");
+          localStorage.setItem(
+            "auth",
+            JSON.stringify({ username, accessToken: data.token })
+          );
           setAuth({ username, accessToken: data.token });
           setSuccess(true);
         }

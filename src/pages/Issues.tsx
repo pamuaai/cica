@@ -12,7 +12,7 @@ export default function Issues() {
     if (!auth.accessToken) {
       navigate("/");
     }
-  }, [navigate, auth.accessToken]);
+  });
   return (
     <Container className="pt-4">
       <Row>
