@@ -6,55 +6,59 @@ import {
   useRef,
   useState,
 } from "react";
+import { register } from "../api/auth";
 import {
-  Container,
   Alert,
   Button,
+  Card,
+  Col,
+  Container,
   Form,
   Row,
-  Col,
-  Card,
 } from "react-bootstrap";
-import { login } from "../api/auth";
-import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { NavLink, useNavigate } from "react-router-dom";
 
-export default function Login() {
-  const { setAuth } = useAuth() as { setAuth: any };
+const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+export default function Register() {
   const navigate = useNavigate();
   const usernameRef = useRef() as RefObject<HTMLInputElement>;
-  const [searchParams] = useSearchParams();
 
   const [values, setValues] = useState({
     password: "",
-    username: searchParams.get("username") || "",
+    username: "",
+    email: "",
+    matchPassword: "",
   });
+
   const [validUsername, setValidUsername] = useState<boolean>(false);
   const [validPassword, setValidPassword] = useState<boolean>(false);
+  const [validMatchPassword, setValidMatchPassword] = useState<boolean>(false);
+  const [validEmail, setValidEmail] = useState<boolean>(false);
+
   const [err, setErr] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<boolean>(false);
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) =>
     setValues({ ...values, [event.target.name]: event.target.value });
 
-  const [success, setSuccess] = useState<boolean>(false);
-
-  const { password, username } = values;
+  const { password, username, email, matchPassword } = values;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
+    console.log(values);
     if (!values) {
       setErr("Unexpected error");
     }
     try {
-      const { data, status } = await login(username, password);
-      if (status === 200) {
+      const { data, status } = await register(username, password, email);
+      if (status < 300) {
         setErr(undefined);
         if (data) {
-          setAuth({ username, accessToken: data.token });
           setSuccess(true);
         }
       } else {
-        setErr("Unexpected error");
+        setErr("Váratlan hiba történt");
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -67,7 +71,8 @@ export default function Login() {
     }
   }
 
-  const canSubmit = validPassword && validUsername;
+  const canSubmit =
+    validUsername && validEmail && validPassword && validMatchPassword;
 
   useEffect(() => {
     if (usernameRef.current != null) {
@@ -80,20 +85,25 @@ export default function Login() {
   }, [username]);
 
   useEffect(() => {
+    setValidEmail(EMAIL_REGEX.test(email));
+  }, [email]);
+
+  useEffect(() => {
     setValidPassword(password.length > 3);
-  }, [password]);
+    setValidMatchPassword(password === matchPassword);
+  }, [password, matchPassword]);
 
   useEffect(() => {
     setErr("");
-  }, [username, password]);
+  }, [username, password, email, matchPassword]);
 
   useEffect(() => {
     if (success) {
       setTimeout(() => {
-        navigate(`/issues`);
+        navigate(`/login?username=${username}`);
       }, 4000);
     }
-  }, [success, navigate]);
+  }, [success, navigate, username]);
 
   return (
     <Container className="pt-5">
@@ -101,12 +111,12 @@ export default function Login() {
         <Col md={6} lg={4}>
           <Card>
             <Card.Header>
-              <h1>Belépés</h1>
+              <h1>Regisztráció</h1>
             </Card.Header>
             <Card.Body className="p-3">
               {success ? (
                 <Alert variant="success">
-                  Sikeres belépés! <br /> Átirányítás...
+                  Sikeres regisztráció! <br /> Átirányítás...
                 </Alert>
               ) : (
                 <Form onSubmit={handleSubmit}>
@@ -122,6 +132,16 @@ export default function Login() {
                     isValid={validUsername}
                     required
                   />
+                  <Form.Label htmlFor="email">Email: </Form.Label>
+                  <Form.Control
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={email}
+                    onChange={handleChange}
+                    isValid={validEmail}
+                    required
+                  />
                   <Form.Label htmlFor="password">Jelszó: </Form.Label>
                   <Form.Control
                     type="password"
@@ -132,6 +152,20 @@ export default function Login() {
                     isValid={validPassword}
                     required
                   />
+                  <Form.Label htmlFor="matchPassword">
+                    Jelszó mégegyszer:{" "}
+                  </Form.Label>
+                  <Form.Control
+                    type="password"
+                    id="matchPassword"
+                    name="matchPassword"
+                    value={matchPassword}
+                    onChange={handleChange}
+                    isValid={
+                      !!password.length && validPassword && validMatchPassword
+                    }
+                    required
+                  />
 
                   <Button
                     variant="success"
@@ -139,14 +173,14 @@ export default function Login() {
                     className="mt-2"
                     disabled={!canSubmit}
                   >
-                    Belépés
+                    Regisztráció
                   </Button>
                 </Form>
               )}
             </Card.Body>
             <Card.Footer>
-              Nincs még fiókod?{" "}
-              <NavLink to="/register">Itt tudsz regisztrálni!</NavLink>
+              Már regisztráltál?{" "}
+              <NavLink to="/login">Itt tudsz belépni!</NavLink>
             </Card.Footer>
           </Card>
         </Col>

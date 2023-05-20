@@ -1,16 +1,18 @@
 import { useEffect } from "react";
-import { checkLoggedIn } from "../functions/auth";
 import { useNavigate } from "react-router-dom";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import { Issue } from "../components/Issue";
+import useAuth from "../hooks/useAuth";
 
-export function Issues() {
+export default function Issues() {
   const navigate = useNavigate();
+  const { auth } = useAuth() as { auth: any };
+
   useEffect(() => {
-    if (!checkLoggedIn()) {
+    if (!auth.accessToken) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [navigate, auth.accessToken]);
   return (
     <Container className="pt-4">
       <Row>

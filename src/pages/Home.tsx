@@ -1,16 +1,17 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { checkLoggedIn } from "../functions/auth";
 import { Container } from "react-bootstrap";
+import useAuth from "../hooks/useAuth";
 
-export function Home() {
+export default function Home() {
   const navigate = useNavigate();
+  const { auth } = useAuth() as { auth: any };
 
   useEffect(() => {
-    if (checkLoggedIn()) {
+    if (!!auth.accessToken) {
       navigate("/issues");
     }
-  }, [navigate]);
+  }, [navigate, auth.accessToken]);
 
   return (
     <Container>

@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Container, Nav, Navbar } from "react-bootstrap";
-import { checkLoggedIn } from "../functions/auth";
 import "./Menu.scss";
+import useAuth from "../hooks/useAuth";
 
 export default function Menu() {
   const [isLoggedIn, setLoggedIn] = useState(false);
+  const { auth } = useAuth() as { auth: any };
   useEffect(() => {
-    setLoggedIn(checkLoggedIn());
-  }, []);
+    setLoggedIn(!!auth.accessToken);
+  }, [auth.accessToken]);
 
   return (
     <Navbar
@@ -54,10 +55,10 @@ export default function Menu() {
 
               <Nav className="gap-2">
                 <NavLink to="/login" className="btn btn-primary">
-                  Login
+                  Belépés
                 </NavLink>
                 <NavLink to="/register" className="btn btn-light text-black">
-                  Register
+                  Regisztráció
                 </NavLink>
               </Nav>
             </>
