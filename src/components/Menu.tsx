@@ -9,9 +9,8 @@ export default function Menu() {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const { auth, setAuth } = useAuth() as { auth: any; setAuth: any };
   useEffect(() => {
-    console.log(auth.accessToken);
     setLoggedIn(auth.accessToken);
-  });
+  }, [setLoggedIn, auth.accessToken]);
 
   function logout() {
     setAuth({});
