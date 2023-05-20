@@ -12,25 +12,26 @@ export default function Issues() {
   const [issues, setIssues] = useState<IssueType[]>([]);
   const axiosPrivate = useAxiosPrivate();
 
-  async function loadIssues() {
-    const { data, status } = await axiosPrivate.get("/issues");
-    if (status === 200) {
-      if (data) {
-        setIssues(data.results);
-      }
-    } else {
-      console.error("Unexpected error", status);
-    }
-  }
-
   useEffect(() => {
+    async function loadIssues() {
+      const { data, status } = await axiosPrivate.get("/issues");
+      if (status === 200) {
+        if (data) {
+          setIssues(data.results);
+        }
+      } else {
+        console.error("Unexpected error", status);
+      }
+    }
+
     if (!auth.accessToken) {
       navigate("/");
     } else {
       // GET THE ISSUES
       loadIssues();
     }
-  });
+  }, [auth.accessToken, navigate]);
+
   return (
     <Container className="pt-4">
       <Row>
