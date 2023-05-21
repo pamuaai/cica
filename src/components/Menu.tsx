@@ -37,16 +37,11 @@ export default function Menu() {
                   to="/issues"
                   className="text-decoration-none text-white me-3"
                 >
-                  Active Issues
-                </NavLink>
-                <NavLink
-                  to="/inactive"
-                  className="text-decoration-none text-white"
-                >
-                  Blocked & Denied issues
+                  Issues
                 </NavLink>
               </Nav>
-              <Nav className="gap-2">
+              <Nav className="gap-2 align-items-center">
+                <div className="text-white me-3">👤 {auth.username}</div>
                 <Button variant="danger" onClick={() => logout()}>
                   Kilépés
                 </Button>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Issue } from "../components/Issue";
 import useAuth from "../hooks/useAuth";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
@@ -8,19 +8,32 @@ import { IssueType } from "./Issues.types";
 
 export default function Issues() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { auth } = useAuth() as { auth: any };
   const [issues, setIssues] = useState<IssueType[]>([]);
+  const [showMyIssues, setShowMyIssues] = useState<boolean>(
+    searchParams.has("showMyIssues")
+  );
   const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
     async function loadIssues() {
-      const { data, status } = await axiosPrivate.get("/issues");
-      if (status === 200) {
-        if (data) {
-          setIssues(data.results);
+      try {
+        const { data, status } = await axiosPrivate.get("/issues");
+        if (status === 200) {
+          if (data) {
+            setIssues(data.results);
+          }
+        } else {
+          console.log("asdasdasdasd");
+          console.error("Unexpected error", status);
         }
-      } else {
-        console.error("Unexpected error", status);
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error(err.message);
+        } else {
+          console.error("Váratlan hiba történt", err);
+        }
       }
     }
 
@@ -32,8 +45,28 @@ export default function Issues() {
     }
   }, [auth.accessToken, navigate, axiosPrivate]);
 
+  function onShowMyIssuesChange(
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void {
+    const target = event.target;
+    const value = target.checked;
+    setShowMyIssues(value);
+  }
+
   return (
-    <Container className="pt-4">
+    <Container>
+      <Row className="py-4">
+        <Form>
+          <Form.Check
+            type="switch"
+            id="my-issues-filter"
+            name="my-issues-filter"
+            label="Saját issue-k"
+            onChange={onShowMyIssuesChange}
+          />
+        </Form>
+      </Row>
+      {showMyIssues && "SHOULD SHOW ONLY MY ISSUES"}
       <Row>
         <Col>
           <Card border="warning">

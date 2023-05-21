@@ -1,4 +1,10 @@
-export type IssueStates = "NEW" | "INPROGRESS" | "REVIEW" | "DONE";
+export type IssueStates =
+  | "NEW"
+  | "REFUSED"
+  | "INPROGRESS"
+  | "BLOCKED"
+  | "REVIEW"
+  | "DONE";
 export interface IssueType {
   id: number;
   name: string;
