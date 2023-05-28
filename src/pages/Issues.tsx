@@ -8,24 +8,52 @@ import { IssueType } from "./Issues.types";
 
 export default function Issues() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { auth } = useAuth() as { auth: any };
   const [issues, setIssues] = useState<IssueType[]>([]);
-  const [showMyIssues, setShowMyIssues] = useState<boolean>(
-    searchParams.has("showMyIssues")
+  const [myIssuesFilter, setMyIssuesFilter] = useState<boolean>(
+    searchParams.get("showMyIssues") === "true"
   );
   const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
+    searchParams.set("showMyIssues", String(myIssuesFilter));
+    setSearchParams(searchParams);
+  }, [myIssuesFilter, searchParams, setSearchParams]);
+
+  useEffect(() => {
     async function loadIssues() {
+      const issueSearchParams: Record<string, any> = {};
+      if (myIssuesFilter) {
+        try {
+          const { data, status } = await axiosPrivate.get("/users", {
+            params: { username: auth.username },
+          });
+          if (status === 200) {
+            if (data) {
+              issueSearchParams.user = data.results[0].id;
+            }
+          } else {
+            console.error("Unexpected error", status);
+          }
+        } catch (err) {
+          if (err instanceof Error) {
+            console.error(err.message);
+          } else {
+            console.error("Váratlan hiba történt", err);
+          }
+        }
+      }
+
       try {
-        const { data, status } = await axiosPrivate.get("/issues");
+        const { data, status } = await axiosPrivate.get("/issues", {
+          params: issueSearchParams,
+        });
         if (status === 200) {
           if (data) {
             setIssues(data.results);
           }
         } else {
-          console.log("asdasdasdasd");
           console.error("Unexpected error", status);
         }
       } catch (err) {
@@ -36,21 +64,20 @@ export default function Issues() {
         }
       }
     }
-
     if (!auth.accessToken) {
       navigate("/");
     } else {
       // GET THE ISSUES
       loadIssues();
     }
-  }, [auth.accessToken, navigate, axiosPrivate]);
+  }, [navigate, axiosPrivate, auth, myIssuesFilter]);
 
   function onShowMyIssuesChange(
     event: React.ChangeEvent<HTMLInputElement>
   ): void {
     const target = event.target;
     const value = target.checked;
-    setShowMyIssues(value);
+    setMyIssuesFilter(value);
   }
 
   return (
@@ -62,11 +89,11 @@ export default function Issues() {
             id="my-issues-filter"
             name="my-issues-filter"
             label="Saját issue-k"
+            checked={myIssuesFilter}
             onChange={onShowMyIssuesChange}
           />
         </Form>
       </Row>
-      {showMyIssues && "SHOULD SHOW ONLY MY ISSUES"}
       <Row>
         <Col>
           <Card border="warning">
