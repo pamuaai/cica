@@ -51,11 +51,10 @@ export default function Login() {
         setErr(undefined);
         if (data) {
           localStorage.removeItem("auth");
-          localStorage.setItem(
-            "auth",
-            JSON.stringify({ username, accessToken: data.token })
-          );
-          setAuth({ username, accessToken: data.token });
+          console.log(data.user);
+          const authObject = { user: data.user, accessToken: data.token };
+          localStorage.setItem("auth", JSON.stringify(authObject));
+          setAuth(authObject);
           setSuccess(true);
         }
       } else {

@@ -1,148 +1,132 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Alert, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Issue } from "../components/Issue";
 import useAuth from "../hooks/useAuth";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { IssueType } from "./Issues.types";
+import { ISSUE_STATE_NAMES, IssueType } from "./Issues.types";
 
 export default function Issues() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { auth } = useAuth() as { auth: any };
   const [issues, setIssues] = useState<IssueType[]>([]);
-  const [myIssuesFilter, setMyIssuesFilter] = useState<boolean>(
-    searchParams.get("showMyIssues") === "true"
-  );
+
+  const [filters, setFilters] = useState({
+    showMyIssues: false,
+    showNew: true,
+  });
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue =
+      event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
+    setFilters({ ...filters, [event.target.name]: newValue });
+  };
   const axiosPrivate = useAxiosPrivate();
 
-  useEffect(() => {
-    searchParams.set("showMyIssues", String(myIssuesFilter));
-    setSearchParams(searchParams);
-  }, [myIssuesFilter, searchParams, setSearchParams]);
-
-  useEffect(() => {
-    async function loadIssues() {
-      const issueSearchParams: Record<string, any> = {};
-      if (myIssuesFilter) {
-        try {
-          const { data, status } = await axiosPrivate.get("/users", {
-            params: { username: auth.username },
-          });
-          if (status === 200) {
-            if (data) {
-              issueSearchParams.user = data.results[0].id;
-            }
-          } else {
-            console.error("Unexpected error", status);
-          }
-        } catch (err) {
-          if (err instanceof Error) {
-            console.error(err.message);
-          } else {
-            console.error("Váratlan hiba történt", err);
-          }
+  const loadIssues = useCallback(async () => {
+    const issueSearchParams: Record<string, any> = {};
+    if (filters.showMyIssues) {
+      issueSearchParams.user = auth.user.id;
+    }
+    try {
+      const { data, status } = await axiosPrivate.get("/issues", {
+        params: issueSearchParams,
+      });
+      if (status === 200) {
+        if (data) {
+          setIssues(data.results);
         }
+      } else {
+        console.error("Unexpected error", status);
       }
-
-      try {
-        const { data, status } = await axiosPrivate.get("/issues", {
-          params: issueSearchParams,
-        });
-        if (status === 200) {
-          if (data) {
-            setIssues(data.results);
-          }
-        } else {
-          console.error("Unexpected error", status);
-        }
-      } catch (err) {
-        if (err instanceof Error) {
-          console.error(err.message);
-        } else {
-          console.error("Váratlan hiba történt", err);
-        }
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(err.message);
+      } else {
+        console.error("Váratlan hiba történt", err);
       }
     }
+  }, [auth, axiosPrivate, filters]);
+
+  useEffect(() => {
+    console.log("HASDAD", searchParams.get("showMyIssues") === "true", filters);
+
+    setFilters({
+      ...filters,
+      showMyIssues: searchParams.get("showMyIssues") === "true",
+    });
+  }, []);
+
+  useEffect(() => {
+    searchParams.set("showMyIssues", String(filters.showMyIssues));
+    setSearchParams(searchParams);
+  }, [filters, searchParams, setSearchParams]);
+
+  useEffect(() => {
     if (!auth.accessToken) {
       navigate("/");
     } else {
-      // GET THE ISSUES
       loadIssues();
     }
-  }, [navigate, axiosPrivate, auth, myIssuesFilter]);
+  }, [navigate, auth, loadIssues]);
 
-  function onShowMyIssuesChange(
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void {
-    const target = event.target;
-    const value = target.checked;
-    setMyIssuesFilter(value);
+  function updateIssueList(): void {
+    loadIssues();
+  }
+
+  function renderFilterForm() {
+    return (
+      <Form>
+        <Form.Check
+          type="switch"
+          id="showMyIssues"
+          name="showMyIssues"
+          label="Saját issue-k"
+          checked={filters.showMyIssues}
+          onChange={handleFilterChange}
+        />
+      </Form>
+    );
   }
 
   return (
     <Container>
-      <Row className="py-4">
-        <Form>
-          <Form.Check
-            type="switch"
-            id="my-issues-filter"
-            name="my-issues-filter"
-            label="Saját issue-k"
-            checked={myIssuesFilter}
-            onChange={onShowMyIssuesChange}
-          />
-        </Form>
-      </Row>
+      <Row className="py-4">{renderFilterForm()}</Row>
       <Row>
-        <Col>
-          <Card border="warning">
-            <Card.Header className="bg-warning">New</Card.Header>
-            <Card.Body>
-              {issues
-                .filter((i) => i.state === "NEW")
-                .map((i) => (
-                  <Issue issue={i} />
-                ))}
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col>
-          <Card border="info">
-            <Card.Header className="bg-info">In progress</Card.Header>
-            <Card.Body>
-              {issues
-                .filter((i) => i.state === "INPROGRESS")
-                .map((i) => (
-                  <Issue issue={i} />
-                ))}
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col>
-          <Card border="danger">
-            <Card.Header className="bg-danger">Review</Card.Header>
-            <Card.Body>
-              {issues
-                .filter((i) => i.state === "REVIEW")
-                .map((i) => (
-                  <Issue issue={i} />
-                ))}
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col>
-          <Card border="success">
-            <Card.Header className="bg-success">Done</Card.Header>
-            <Card.Body>
-              {issues
-                .filter((i) => i.state === "DONE")
-                .map((i) => (
-                  <Issue issue={i} />
-                ))}
-            </Card.Body>
-          </Card>
-        </Col>
+        {!!issues.length ? (
+          <>
+            {ISSUE_STATE_NAMES.map((issueState) => (
+              <>
+                {!!issues.find((i) => i.state === issueState.state) && (
+                  <Col key={`column-${issueState.name}`}>
+                    <Card border={issueState.color}>
+                      <Card.Header className={`bg-${issueState.color}`}>
+                        {issueState.name}
+                      </Card.Header>
+                      <Card.Body>
+                        {issues
+                          .filter((i) => i.state === issueState.state)
+                          .map((i) => (
+                            <Issue
+                              issue={i}
+                              updateIssueList={updateIssueList}
+                              key={i.id}
+                            />
+                          ))}
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                )}
+              </>
+            ))}
+          </>
+        ) : (
+          <Alert variant="warning">
+            Nem találtunk a keresésnek megfelelő issuet
+          </Alert>
+        )}
       </Row>
     </Container>
   );
