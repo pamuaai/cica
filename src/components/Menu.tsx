@@ -10,7 +10,7 @@ export default function Menu() {
   const { auth, setAuth } = useAuth() as { auth: any; setAuth: any };
   useEffect(() => {
     setLoggedIn(auth.accessToken);
-  }, [setLoggedIn, auth.accessToken]);
+  }, [setLoggedIn, auth]);
 
   function logout() {
     setAuth({});
@@ -41,7 +41,7 @@ export default function Menu() {
                 </NavLink>
               </Nav>
               <Nav className="gap-2 align-items-center">
-                <div className="text-white me-3">👤 {auth.user.username}</div>
+                <div className="text-white me-3">👤 {auth.user?.username}</div>
                 <Button variant="danger" onClick={() => logout()}>
                   Kilépés
                 </Button>

@@ -35,8 +35,8 @@ export default function Register() {
   const [validPassword, setValidPassword] = useState<boolean>(false);
   const [validMatchPassword, setValidMatchPassword] = useState<boolean>(false);
   const [validEmail, setValidEmail] = useState<boolean>(false);
-
   const [err, setErr] = useState<string | undefined>(undefined);
+  const [disabled, setDisabled] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) =>
@@ -46,7 +46,7 @@ export default function Register() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log(values);
+    setDisabled(true);
     if (!values) {
       setErr("Unexpected error");
     }
@@ -59,6 +59,7 @@ export default function Register() {
         }
       } else {
         setErr("Váratlan hiba történt");
+        setDisabled(false);
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -68,11 +69,16 @@ export default function Register() {
         console.error("Váratlan hiba történt", err);
         setErr("Váratlan hiba történt");
       }
+      setDisabled(false);
     }
   }
 
   const canSubmit =
-    validUsername && validEmail && validPassword && validMatchPassword;
+    validUsername &&
+    validEmail &&
+    validPassword &&
+    validMatchPassword &&
+    !disabled;
 
   useEffect(() => {
     if (usernameRef.current != null) {
@@ -130,6 +136,7 @@ export default function Register() {
                     value={username}
                     onChange={handleChange}
                     isValid={validUsername}
+                    disabled={disabled}
                     required
                   />
                   <Form.Label htmlFor="email">Email: </Form.Label>
@@ -140,6 +147,7 @@ export default function Register() {
                     value={email}
                     onChange={handleChange}
                     isValid={validEmail}
+                    disabled={disabled}
                     required
                   />
                   <Form.Label htmlFor="password">Jelszó: </Form.Label>
@@ -150,6 +158,7 @@ export default function Register() {
                     value={password}
                     onChange={handleChange}
                     isValid={validPassword}
+                    disabled={disabled}
                     required
                   />
                   <Form.Label htmlFor="matchPassword">
@@ -164,6 +173,7 @@ export default function Register() {
                     isValid={
                       !!password.length && validPassword && validMatchPassword
                     }
+                    disabled={disabled}
                     required
                   />
 

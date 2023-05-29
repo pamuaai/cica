@@ -34,14 +34,14 @@ export default function Login() {
   const [err, setErr] = useState<string | undefined>(undefined);
   const handleChange = (event: ChangeEvent<HTMLInputElement>) =>
     setValues({ ...values, [event.target.name]: event.target.value });
-
+  const [disabled, setDisabled] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
 
   const { password, username } = values;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
+    setDisabled(true);
     if (!values) {
       setErr("Unexpected error");
     }
@@ -59,6 +59,7 @@ export default function Login() {
         }
       } else {
         setErr("Unexpected error");
+        setDisabled(false);
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -68,10 +69,11 @@ export default function Login() {
         console.error("Váratlan hiba történt", err);
         setErr("Váratlan hiba történt");
       }
+      setDisabled(false);
     }
   }
 
-  const canSubmit = validPassword && validUsername;
+  const canSubmit = validPassword && validUsername && !disabled;
 
   useEffect(() => {
     if (usernameRef.current != null) {
@@ -124,6 +126,7 @@ export default function Login() {
                     value={username}
                     onChange={handleChange}
                     isValid={validUsername}
+                    disabled={disabled}
                     required
                   />
                   <Form.Label htmlFor="password">Jelszó: </Form.Label>
@@ -134,6 +137,7 @@ export default function Login() {
                     value={password}
                     onChange={handleChange}
                     isValid={validPassword}
+                    disabled={disabled}
                     required
                   />
 
