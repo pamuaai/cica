@@ -51,12 +51,11 @@ export default function Issues() {
   }, [auth, axiosPrivate, filters]);
 
   useEffect(() => {
-    console.log("HASDAD", searchParams.get("showMyIssues") === "true", filters);
-
     setFilters({
       ...filters,
       showMyIssues: searchParams.get("showMyIssues") === "true",
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
