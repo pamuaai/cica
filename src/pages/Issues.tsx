@@ -4,13 +4,15 @@ import { Alert, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Issue } from "../components/Issue";
 import useAuth from "../hooks/useAuth";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { ISSUE_STATE_NAMES, IssueType } from "./Issues.types";
+import { ISSUE_STATE_NAMES, IssueType, UserType } from "./Issues.types";
+import { NewIssueCreator } from "../components/NewIssueCreator";
 
 export default function Issues() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { auth } = useAuth() as { auth: any };
   const [issues, setIssues] = useState<IssueType[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
 
   const [filters, setFilters] = useState({
     showMyIssues: false,
@@ -50,6 +52,25 @@ export default function Issues() {
     }
   }, [auth, axiosPrivate, filters]);
 
+  const loadUsers = useCallback(async () => {
+    try {
+      const { data, status } = await axiosPrivate.get("/users");
+      if (status === 200) {
+        if (data) {
+          setUsers(data.results);
+        }
+      } else {
+        console.error("Unexpected error", status);
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(err.message);
+      } else {
+        console.error("Váratlan hiba történt", err);
+      }
+    }
+  }, [axiosPrivate]);
+
   useEffect(() => {
     setFilters({
       ...filters,
@@ -67,13 +88,10 @@ export default function Issues() {
     if (!auth.accessToken) {
       navigate("/");
     } else {
+      loadUsers();
       loadIssues();
     }
-  }, [navigate, auth, loadIssues]);
-
-  function updateIssueList(): void {
-    loadIssues();
-  }
+  }, [navigate, auth, loadIssues, loadUsers]);
 
   function renderFilterForm() {
     return (
@@ -90,36 +108,41 @@ export default function Issues() {
     );
   }
 
+  function renderNewIssueButton() {
+    return <NewIssueCreator updateIssueList={loadIssues} />;
+  }
+
   return (
     <Container>
-      <Row className="py-4">{renderFilterForm()}</Row>
+      <div className="py-4 d-flex justify-content-between">
+        <div>{renderFilterForm()}</div> <div>{renderNewIssueButton()}</div>{" "}
+      </div>
       <Row>
         {!!issues.length ? (
           <>
-            {ISSUE_STATE_NAMES.map((issueState) => (
-              <>
-                {!!issues.find((i) => i.state === issueState.state) && (
-                  <Col key={`column-${issueState.name}`}>
-                    <Card border={issueState.color}>
-                      <Card.Header className={`bg-${issueState.color}`}>
-                        {issueState.name}
-                      </Card.Header>
-                      <Card.Body>
-                        {issues
-                          .filter((i) => i.state === issueState.state)
-                          .map((i) => (
-                            <Issue
-                              issue={i}
-                              updateIssueList={updateIssueList}
-                              key={i.id}
-                            />
-                          ))}
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                )}
-              </>
-            ))}
+            {ISSUE_STATE_NAMES.map((issueState) =>
+              issues.find((i) => i.state === issueState.state) ? (
+                <Col key={`column-${issueState.name}`}>
+                  <Card border={issueState.color}>
+                    <Card.Header className={`bg-${issueState.color}`}>
+                      {issueState.name}
+                    </Card.Header>
+                    <Card.Body>
+                      {issues
+                        .filter((i) => i.state === issueState.state)
+                        .map((i) => (
+                          <Issue
+                            issue={i}
+                            updateIssueList={loadIssues}
+                            userList={users}
+                            key={i.id}
+                          />
+                        ))}
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ) : null
+            )}
           </>
         ) : (
           <Alert variant="warning">

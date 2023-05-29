@@ -27,3 +27,9 @@ export interface IssueType {
   state: IssueStates;
   updatedAt: string;
 }
+
+export interface UserType {
+  id: number;
+  username: string;
+  email: string;
+}
