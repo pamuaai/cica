@@ -221,7 +221,7 @@ export function Issue({
 
   return (
     <>
-      <Card className="mb-3" onClick={handleShow}>
+      <Card className="mb-3 cursor-pointer" onClick={handleShow}>
         <Card.Header>
           <h3>{issue.name}</h3>
           <h5>Felelős: {issue.owner.username}</h5>

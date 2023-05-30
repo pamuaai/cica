@@ -118,11 +118,9 @@ export default function Issues() {
         <div>{renderFilterForm()}</div> <div>{renderNewIssueButton()}</div>{" "}
       </div>
       <Row>
-        {!!issues.length ? (
-          <>
-            {ISSUE_STATE_NAMES.map((issueState) =>
+        {!!issues.length ? ISSUE_STATE_NAMES.map((issueState) =>
               issues.find((i) => i.state === issueState.state) ? (
-                <Col key={`column-${issueState.name}`}>
+                <Col key={`column-${issueState.name}`} className="mw-25">
                   <Card border={issueState.color}>
                     <Card.Header className={`bg-${issueState.color}`}>
                       {issueState.name}
@@ -142,9 +140,7 @@ export default function Issues() {
                   </Card>
                 </Col>
               ) : null
-            )}
-          </>
-        ) : (
+            ) : (
           <Alert variant="warning">
             Nem találtunk a keresésnek megfelelő issuet
           </Alert>
