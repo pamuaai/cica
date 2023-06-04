@@ -7,6 +7,10 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { ISSUE_STATE_NAMES, IssueType, UserType } from "./Issues.types";
 import { NewIssueCreator } from "../components/NewIssueCreator";
 
+interface FilterState {
+  showMyIssues?: boolean;
+}
+
 export default function Issues() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,16 +18,20 @@ export default function Issues() {
   const [issues, setIssues] = useState<IssueType[]>([]);
   const [users, setUsers] = useState<UserType[]>([]);
 
-  const [filters, setFilters] = useState({
-    showMyIssues: false,
-    showNew: true,
+  const [filters, setFilters] = useState<FilterState>({
+    showMyIssues: undefined,
   });
+
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue =
       event.target.type === "checkbox"
         ? event.target.checked
         : event.target.value;
     setFilters({ ...filters, [event.target.name]: newValue });
+    console.log("Setting parameters after change");
+    
+    searchParams.set(event.target.name, String(newValue));
+    setSearchParams(searchParams);
   };
   const axiosPrivate = useAxiosPrivate();
 
@@ -71,27 +79,32 @@ export default function Issues() {
     }
   }, [axiosPrivate]);
 
-  useEffect(() => {
+  const loadFilters = useCallback(async () => {
+    console.log("Initial filter setup", JSON.stringify({
+      ...filters,
+      showMyIssues: searchParams.get("showMyIssues") === "true",
+    }), searchParams.get("showMyIssues"));
+    
     setFilters({
       ...filters,
       showMyIssues: searchParams.get("showMyIssues") === "true",
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    searchParams.set("showMyIssues", String(filters.showMyIssues));
-    setSearchParams(searchParams);
-  }, [filters, searchParams, setSearchParams]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   useEffect(() => {
     if (!auth.accessToken) {
       navigate("/");
     } else {
+      console.log("Startup");
+      
+      loadFilters();
       loadUsers();
       loadIssues();
     }
-  }, [navigate, auth, loadIssues, loadUsers]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function renderFilterForm() {
     return (
