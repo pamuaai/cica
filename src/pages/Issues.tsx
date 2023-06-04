@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Alert, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Issue } from "../components/Issue";
 import useAuth from "../hooks/useAuth";
@@ -12,7 +12,6 @@ interface FilterState {
 }
 
 export default function Issues() {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { auth } = useAuth() as { auth: any };
   const [issues, setIssues] = useState<IssueType[]>([]);
@@ -43,6 +42,8 @@ export default function Issues() {
       return;
     }
     loadIssues();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const axiosPrivate = useAxiosPrivate();
