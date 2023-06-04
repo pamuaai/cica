@@ -85,7 +85,7 @@ export function NewIssueCreator({
         console.error(err.message);
         setErr(err.message);
       } else {
-        console.error("Váratlan hiba történt", err);
+        console.error("Váratlan hiba történt:", err);
         setErr("Váratlan hiba történt");
       }
     }

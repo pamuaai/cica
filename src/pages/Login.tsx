@@ -43,7 +43,7 @@ export default function Login() {
     event.preventDefault();
     setDisabled(true);
     if (!values) {
-      setErr("Unexpected error");
+      setErr("Váratlan hiba történt");
     }
     try {
       const { data, status } = await login(username, password);
@@ -51,14 +51,13 @@ export default function Login() {
         setErr(undefined);
         if (data) {
           localStorage.removeItem("auth");
-          console.log(data.user);
           const authObject = { user: data.user, accessToken: data.token };
           localStorage.setItem("auth", JSON.stringify(authObject));
           setAuth(authObject);
           setSuccess(true);
         }
       } else {
-        setErr("Unexpected error");
+        setErr("Váratlan hiba történt");
         setDisabled(false);
       }
     } catch (err) {
@@ -66,7 +65,7 @@ export default function Login() {
         console.error(err.message);
         setErr(err.message);
       } else {
-        console.error("Váratlan hiba történt", err);
+        console.error("Váratlan hiba történt:", err);
         setErr("Váratlan hiba történt");
       }
       setDisabled(false);

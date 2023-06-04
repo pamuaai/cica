@@ -60,13 +60,13 @@ export function Issue({
           handleReset();
         }, 1000);
       } else {
-        console.error("Váratlan hiba történt", status);
+        console.error("Váratlan hiba történt:", status);
       }
     } catch (err) {
       if (err instanceof Error) {
         console.error(err.message);
       } else {
-        console.error("Váratlan hiba történt", err);
+        console.error("Váratlan hiba történt:", err);
       }
     }
   }
@@ -83,13 +83,13 @@ export function Issue({
           handleReset();
         }, 1000);
       } else {
-        console.error("Váratlan hiba történt", status);
+        console.error("Váratlan hiba történt:", status);
       }
     } catch (err) {
       if (err instanceof Error) {
         console.error(err.message);
       } else {
-        console.error("Váratlan hiba történt", err);
+        console.error("Váratlan hiba történt:", err);
       }
     }
   }
@@ -98,7 +98,7 @@ export function Issue({
     event.preventDefault();
     setDisabled(true);
     if (!values) {
-      setErr("Unexpected error1");
+      setErr("Váratlan hiba történt");
     }
     try {
       const { data, status } = await axiosPrivate.patch(`/issues/${issue.id}`, {
@@ -115,14 +115,14 @@ export function Issue({
           }, 1000);
         }
       } else {
-        setErr("Unexpected error2");
+        setErr("Váratlan hiba történt");
       }
     } catch (err) {
       if (err instanceof Error) {
         console.error(err.message);
         setErr(err.message);
       } else {
-        console.error("Váratlan hiba történt", err);
+        console.error("Váratlan hiba történt:", err);
         setErr("Váratlan hiba történt");
       }
     }

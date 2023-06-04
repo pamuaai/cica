@@ -48,7 +48,7 @@ export default function Register() {
     event.preventDefault();
     setDisabled(true);
     if (!values) {
-      setErr("Unexpected error");
+      setErr("Váratlan hiba történt");
     }
     try {
       const { data, status } = await register(username, password, email);
@@ -66,7 +66,7 @@ export default function Register() {
         console.error(err.message);
         setErr(err.message);
       } else {
-        console.error("Váratlan hiba történt", err);
+        console.error("Váratlan hiba történt:", err);
         setErr("Váratlan hiba történt");
       }
       setDisabled(false);

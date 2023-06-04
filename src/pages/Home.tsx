@@ -8,10 +8,10 @@ export default function Home() {
   const { auth } = useAuth() as { auth: any };
 
   useEffect(() => {
-    if (!!auth.accessToken) {
+    if (!!auth?.accessToken) {
       navigate("/issues");
     }
-  }, [navigate, auth.accessToken]);
+  }, [navigate, auth]);
 
   return (
     <Container>
