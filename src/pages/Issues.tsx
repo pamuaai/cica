@@ -18,6 +18,7 @@ export default function Issues() {
   const [users, setUsers] = useState<UserType[]>([]);
   const [err, setErr] = useState<string | undefined>(undefined);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const didMount = useRef(false);
 
   const [filters, setFilters] = useState<FilterState>({
@@ -50,6 +51,7 @@ export default function Issues() {
 
   const loadIssues = useCallback(async () => {
     const issueSearchParams: Record<string, any> = {};
+    setLoading(true);
     if (filters.showMyIssues) {
       issueSearchParams.user = auth?.user?.id;
     }
@@ -65,7 +67,9 @@ export default function Issues() {
         console.error("Váratlan hiba történt:", status);
         setErr("Váratlan hiba történt");
       }
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       if (err instanceof Error) {
         console.error(err.message);
         setErr(err.message);
@@ -149,34 +153,40 @@ export default function Issues() {
           </div>
           <Row>
             {err && <Alert variant="danger">{err}</Alert>}
-            {!!issues.length ? (
-              ISSUE_STATE_NAMES.map((issueState) =>
-                issues.find((i) => i.state === issueState.state) ? (
-                  <Col key={`column-${issueState.name}`} className="mw-25">
-                    <Card border={issueState.color}>
-                      <Card.Header className={`bg-${issueState.color}`}>
-                        {issueState.name}
-                      </Card.Header>
-                      <Card.Body>
-                        {issues
-                          .filter((i) => i.state === issueState.state)
-                          .map((i) => (
-                            <Issue
-                              issue={i}
-                              updateIssueList={loadIssues}
-                              userList={users}
-                              key={i.id}
-                            />
-                          ))}
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                ) : null
-              )
+            {loading ? (
+              <Alert variant="warning">Betöltés...</Alert>
             ) : (
-              <Alert variant="warning">
-                Nem találtunk a keresésnek megfelelő issuet
-              </Alert>
+              <>
+                {!!issues.length ? (
+                  ISSUE_STATE_NAMES.map((issueState) =>
+                    issues.find((i) => i.state === issueState.state) ? (
+                      <Col key={`column-${issueState.name}`} className="mw-25">
+                        <Card border={issueState.color}>
+                          <Card.Header className={`bg-${issueState.color}`}>
+                            {issueState.name}
+                          </Card.Header>
+                          <Card.Body>
+                            {issues
+                              .filter((i) => i.state === issueState.state)
+                              .map((i) => (
+                                <Issue
+                                  issue={i}
+                                  updateIssueList={loadIssues}
+                                  userList={users}
+                                  key={i.id}
+                                />
+                              ))}
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    ) : null
+                  )
+                ) : (
+                  <Alert variant="warning">
+                    Nem találtunk a keresésnek megfelelő issuet
+                  </Alert>
+                )}
+              </>
             )}
           </Row>
         </>
