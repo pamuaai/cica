@@ -224,7 +224,7 @@ export function Issue({
       <Card className="mb-3 cursor-pointer" onClick={handleShow}>
         <Card.Header>
           <h3>{issue.name}</h3>
-          <h5>Felelős: {issue.owner.username}</h5>
+          <h5>Felelős: {issue.owner?.username || "Még nincs"}</h5>
         </Card.Header>
         <Card.Body>{issue.description}</Card.Body>
       </Card>
