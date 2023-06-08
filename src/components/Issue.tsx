@@ -146,7 +146,8 @@ export function Issue({
         <Form.Label htmlFor="user-select">Felelős</Form.Label>
         <Form.Select
           id="user-select"
-          defaultValue={issue.owner.id}
+          defaultValue={issue.owner?.id || undefined}
+          placeholder="Válassz"
           onChange={updateIssueUser}
         >
           {userList.map((u, id) => (
